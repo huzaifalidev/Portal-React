@@ -6,12 +6,15 @@ import ResetPassword from "./pages/auth/resetpassword";
 import LandingPage from "./pages/landingPage";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import AppLayout from "./layout/index.tsx";
 import Dashboard from "./pages/dashboard/index.tsx";
+import Layout from "./layout/index.tsx";
+import GlobalLoader from "./components/loading";
+// import "antd/dist/reset.css";
 
 function App() {
   return (
     <ThemeProvider defaultTheme="light" storageKey="theme">
+      <GlobalLoader />
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -19,9 +22,14 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgetPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route element={<AppLayout/>}>
-          <Route path="/dashboard" element={<Dashboard/>} />
-          </Route>
+          <Route
+            path="/dashboard"
+            element={
+              <Layout>
+                <Dashboard />
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
     </ThemeProvider>

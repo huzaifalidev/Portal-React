@@ -5,20 +5,23 @@ import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { showSuccessToast, showErrorToast } from "@/components/toasts";
-
+import { useDispatch, useSelector } from "react-redux";
+import { setAdmin } from "@/redux/slices/admin";
+import { startLoading, setLoading, stopLoading } from "@/redux/slices/loading";
+import { RootState } from "@/redux/store";
+import { log } from "console";
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
+  password: Yup.string().required("Password is required"),
 });
 
 function SignIn() {
   const [showPassword, setShowPassword] = useState(false);
-
+  const dispatch = useDispatch();
   const handleSubmit = async (values: { email: string; password: string }) => {
+    dispatch(startLoading());
     try {
       const response = await axios.post(
         "http://localhost:5001/taskMate/admin/signin",
@@ -29,10 +32,22 @@ function SignIn() {
       );
 
       if (response.status === 200) {
+        const { _id, name, email } = response.data.admin;
+        dispatch(
+          setAdmin({
+            admin: { id: _id, name, email },
+            token: response.data.token,
+            isLoggedIn: true,
+          })
+        );
+        localStorage.setItem("adminToken", response.data.token);
+        dispatch(stopLoading());
         showSuccessToast("Login successful");
+        // window.location.href = "/";
       }
     } catch (error) {
       console.error(error);
+      dispatch(stopLoading());
       showErrorToast("Login failed");
     }
   };
