@@ -4,7 +4,8 @@ import {
   Briefcase,
   LogOut,
   User,
-  Settings,
+  Moon,
+  Sun,
   ChevronDown,
 } from "lucide-react";
 import {
@@ -27,7 +28,15 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useTheme } from "../theme-provider";
+import { useAlertDialog } from "../alertdialog";
+import { showSuccessToast } from "../toasts";
+import { ToastContainer } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import axios from "axios";
+import { setAdmin } from "@/redux/slices/admin";
+import { useEffect } from "react";
 
 const navItems = [
   {
@@ -52,7 +61,59 @@ const navItems = [
 
 export function AppSidebar() {
   const { state } = useSidebar();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const isCollapsed = state === "collapsed";
+  const { theme, setTheme } = useTheme();
+  const { showDialog } = useAlertDialog();
+
+  const handleLogout = () => {
+    showDialog({
+      title: "Log out?",
+      description: "Are you sure you want to log out of your account?",
+      onConfirm: () => {
+        localStorage.removeItem("adminToken");
+        showSuccessToast("Logged out");
+        setTimeout(() => {
+          navigate("/signin");
+        }, 1000)
+      },
+    });
+  };
+
+  const profileHandler = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5001/taskMate/admin/adminInfo",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        const { _id, name, email } = response.data.admin;
+        dispatch(
+          setAdmin({
+            admin: { id: _id, name, email },
+            isLoggedIn: true,
+          })
+        );
+      }
+    } catch (error) {
+
+    }
+  }
+  useEffect(() => {
+    profileHandler();
+  }, []);
+
+  const admin = useSelector((state: any) => state.admin);
+  console.log(admin.admin.name, "admin from redux");
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <Sidebar className="border-r-0">
@@ -73,7 +134,7 @@ export function AppSidebar() {
                   <div className="flex flex-col gap-0.5 text-left">
                     <span className="font-semibold">TaskMate</span>
                     <span className="text-xs text-muted-foreground">
-                      Enterprise
+                      Task Management System
                     </span>
                   </div>
                 </>
@@ -145,7 +206,8 @@ export function AppSidebar() {
                       />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">Admin</p>
+                      <p className="text-sm font-medium">{
+                        JSON.parse(localStorage.getItem("admin") || "{}").name}</p>
                       <p className="text-xs text-muted-foreground">
                         example.com
                       </p>
@@ -156,13 +218,12 @@ export function AppSidebar() {
                     <User className="mr-2 size-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 size-4" />
-                    <span>Appearance</span>
-                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <LogOut className="mr-2 size-4" />
+                  <DropdownMenuItem
+                  >
+                    <LogOut
+                      onClick={handleLogout}
+                      className="mr-2 size-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -179,10 +240,17 @@ export function AppSidebar() {
                       />
                     </div>
                     <div className="flex flex-col gap-0.5 text-left">
-                      <span className="font-medium">Admin</span>
-                      <span className="text-xs text-muted-foreground">
-                        example.com
-                      </span>
+                      <span className="font-medium">{
+                        admin.admin.name ||"admin"
+                        }</span>
+                      <span  
+                      style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" , fontSize: "10px"}}
+                      className=" text-muted-foreground">
+                        {
+                          admin.admin.email
+                        || "example.com"
+                        }
+                        </span>
                     </div>
                     <ChevronDown className="ml-auto size-4" />
                   </SidebarMenuButton>
@@ -192,12 +260,27 @@ export function AppSidebar() {
                     <User className="mr-2 size-4" />
                     <span>Profile</span>
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
-                    <Settings className="mr-2 size-4" />
-                    <span>Settings</span>
+                  <DropdownMenuItem
+                    className="cursor-pointer"
+                    onClick={toggleTheme}>
+                    {theme === "dark" ? (
+                      <>
+                        <Sun className="mr-2 size-4" />
+                        <span>Light Mode</span>
+                      </>
+                    ) : (
+                      <>
+                        <Moon className="mr-2 size-4" />
+                        <span>Dark Mode</span>
+                      </>
+                    )}
                   </DropdownMenuItem>
+
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="cursor-pointer"
+                  >
                     <LogOut className="mr-2 size-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
@@ -208,6 +291,7 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarFooter>
       <SidebarRail />
+      <ToastContainer />
     </Sidebar>
   );
 }

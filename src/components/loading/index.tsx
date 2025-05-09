@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
-import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
 const GlobalLoader: React.FC = () => {
@@ -25,10 +24,7 @@ const GlobalLoader: React.FC = () => {
         zIndex: 9999,
       }}
     >
-      <Spin
-        indicator={<LoadingOutlined style={{ fontSize: 100 }} spin />}
-        size="large"
-      />
+       <Spin size="large" />
     </div>
   );
 };

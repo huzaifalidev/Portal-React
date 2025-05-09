@@ -8,8 +8,8 @@ import { showSuccessToast, showErrorToast } from "@/components/toasts";
 import { useDispatch, useSelector } from "react-redux";
 import { setAdmin } from "@/redux/slices/admin";
 import { startLoading, setLoading, stopLoading } from "@/redux/slices/loading";
-import { RootState } from "@/redux/store";
-import { log } from "console";
+import { useNavigate } from "react-router-dom";
+
 const validationSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
@@ -18,6 +18,7 @@ const validationSchema = Yup.object().shape({
 });
 
 function SignIn() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch();
   const handleSubmit = async (values: { email: string; password: string }) => {
@@ -43,7 +44,9 @@ function SignIn() {
         localStorage.setItem("adminToken", response.data.token);
         dispatch(stopLoading());
         showSuccessToast("Login successful");
-        // window.location.href = "/";
+        setTimeout(() => {
+        navigate("/dashboard");
+        }, 1000);
       }
     } catch (error) {
       console.error(error);

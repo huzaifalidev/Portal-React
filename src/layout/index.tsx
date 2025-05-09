@@ -13,6 +13,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
         </main>
       </div>
     </SidebarProvider>
+    
   );
 };
 

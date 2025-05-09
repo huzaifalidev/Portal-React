@@ -4,12 +4,13 @@ import { Provider } from "react-redux";
 import store from "./redux/store";
 import "./index.css";
 import App from "./App";
-
+import { AlertDialogProvider } from "@/components/alertdialog";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Provider store={store}>
-      {" "}
-      <App />
+      <AlertDialogProvider>
+        <App />
+      </AlertDialogProvider>
     </Provider>
   </StrictMode>
 );

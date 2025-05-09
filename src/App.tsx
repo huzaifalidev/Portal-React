@@ -9,6 +9,8 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard/index.tsx";
 import Layout from "./layout/index.tsx";
 import GlobalLoader from "./components/loading";
+import Tasks from "./pages/tasks";
+import Portfolios from "./pages/portfolios";
 // import "antd/dist/reset.css";
 
 function App() {
@@ -27,6 +29,22 @@ function App() {
             element={
               <Layout>
                 <Dashboard />
+              </Layout>
+            }
+          />
+          <Route
+            path="/tasks"
+            element={
+              <Layout>
+                <Tasks />
+              </Layout>
+            }
+          />
+          <Route
+            path="/portfolios"
+            element={
+              <Layout>
+                <Portfolios />
               </Layout>
             }
           />
