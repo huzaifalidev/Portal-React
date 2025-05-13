@@ -19,7 +19,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  useSidebar,
 } from "@/components/ui/sidebar";
 import {
   DropdownMenu,
@@ -37,35 +36,25 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { setAdmin } from "@/redux/slices/admin";
 import { useEffect } from "react";
+import type { RootState } from "@/redux/store";
+import { toggleSidebar, collapseSidebar } from "@/redux/slices/sidebar";
 
 const navItems = [
-  {
-    title: "Tasks",
-    icon: CheckSquare,
-    url: "/tasks",
-    isActive: true,
-  },
-  {
-    title: "Portfolios",
-    icon: Briefcase,
-    url: "/portfolios",
-    isActive: false,
-  },
-  {
-    title: "Report",
-    icon: FileBarChart,
-    url: "/reports",
-    isActive: false,
-  },
+  { title: "Dashboard", icon: FileBarChart, url: "/dashboard" },
+  { title: "Tasks", icon: CheckSquare, url: "/tasks" },
+  { title: "Portfolios", icon: Briefcase, url: "/portfolios" },
+  { title: "Report", icon: FileBarChart, url: "/reports" },
 ];
 
 export function AppSidebar() {
-  const { state } = useSidebar();
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const isCollapsed = state === "collapsed";
+  const isCollapsed = useSelector(
+    (state: RootState) => state.sidebar.collapsed
+  );
+  const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { showDialog } = useAlertDialog();
+  const admin = useSelector((state: any) => state.admin);
 
   const handleLogout = () => {
     showDialog({
@@ -74,16 +63,14 @@ export function AppSidebar() {
       onConfirm: () => {
         localStorage.removeItem("adminToken");
         showSuccessToast("Logged out");
-        setTimeout(() => {
-          navigate("/signin");
-        }, 1000)
+        setTimeout(() => navigate("/signin"), 1000);
       },
     });
   };
 
   const profileHandler = async () => {
     try {
-      const response = await axios.get(
+      const res = await axios.get(
         "http://localhost:5001/taskMate/admin/adminInfo",
         {
           headers: {
@@ -91,25 +78,20 @@ export function AppSidebar() {
           },
         }
       );
-      if (response.status === 200) {
-        const { _id, name, email } = response.data.admin;
+      if (res.status === 200) {
+        const { _id, name, email } = res.data.admin;
         dispatch(
-          setAdmin({
-            admin: { id: _id, name, email },
-            isLoggedIn: true,
-          })
+          setAdmin({ admin: { id: _id, name, email }, isLoggedIn: true })
         );
       }
     } catch (error) {
-
+      console.error("Profile fetch failed", error);
     }
-  }
+  };
+
   useEffect(() => {
     profileHandler();
   }, []);
-
-  const admin = useSelector((state: any) => state.admin);
-  console.log(admin.admin.name, "admin from redux");
 
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
@@ -123,21 +105,20 @@ export function AppSidebar() {
             <SidebarMenuButton
               size="lg"
               className={isCollapsed ? "justify-center" : "gap-3"}
-              tooltip={isCollapsed ? "TaskMate" : undefined}
-              isActive={true}
+              tooltip={isCollapsed ? "Toggle Sidebar" : undefined}
+              onClick={() => dispatch(toggleSidebar())}
+              isActive
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-blue-600 text-white">
                 <FileBarChart className="size-4" />
               </div>
               {!isCollapsed && (
-                <>
-                  <div className="flex flex-col gap-0.5 text-left">
-                    <span className="font-semibold">TaskMate</span>
-                    <span className="text-xs text-muted-foreground">
-                      Task Management System
-                    </span>
-                  </div>
-                </>
+                <div className="flex flex-col text-left">
+                  <span className="font-semibold">TaskMate</span>
+                  <span className="text-xs text-muted-foreground">
+                    Task Management System
+                  </span>
+                </div>
               )}
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -152,7 +133,7 @@ export function AppSidebar() {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    isActive={item.isActive}
+                    isActive={location.pathname === item.url}
                     tooltip={isCollapsed ? item.title : undefined}
                   >
                     <Link
@@ -160,13 +141,11 @@ export function AppSidebar() {
                       className={
                         isCollapsed
                           ? "justify-center"
-                          : "flex justify-start gap-3"
+                          : "flex items-center gap-3"
                       }
                     >
-                      <div className="flex items-center gap-3">
-                        <item.icon className="size-4" />
-                        {!isCollapsed && <span>{item.title}</span>}
-                      </div>
+                      <item.icon className="size-4" />
+                      {!isCollapsed && <span>{item.title}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -179,119 +158,71 @@ export function AppSidebar() {
       <SidebarFooter className={isCollapsed ? "p-2" : "p-3"}>
         <SidebarMenu>
           <SidebarMenuItem>
-            {isCollapsed ? (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton
-                    size="lg"
-                    className="justify-center"
-                    tooltip="Admin"
-                  >
-                    <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
-                      <img
-                        src="https://i.pravatar.cc/40"
-                        alt="User Avatar"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="flex items-center gap-2 p-2">
-                    <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
-                      <img
-                        src="https://i.pravatar.cc/40"
-                        alt="User Avatar"
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{
-                        JSON.parse(localStorage.getItem("admin") || "{}").name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        example.com
-                      </p>
-                    </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  size="lg"
+                  className={isCollapsed ? "justify-center" : "gap-3"}
+                >
+                  <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
+                    <img
+                      src="https://i.pravatar.cc/40"
+                      alt="User Avatar"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <User className="mr-2 size-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                  >
-                    <LogOut
-                      onClick={handleLogout}
-                      className="mr-2 size-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton size="lg" className="gap-3">
-                    <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
-                      <img
-                        src="https://i.pravatar.cc/40"
-                        alt="User Avatar"
-                        className="h-full w-full object-cover"
-                      />
+                  {!isCollapsed && (
+                    <div className="flex flex-col text-left overflow-hidden">
+                      <span className="font-medium truncate">
+                        {admin.admin.name || "Admin"}
+                      </span>
+                      <span className="text-xs text-muted-foreground truncate">
+                        {admin.admin.email || "example.com"}
+                      </span>
                     </div>
-                    <div className="flex flex-col gap-0.5 text-left">
-                      <span className="font-medium">{
-                        admin.admin.name ||"admin"
-                        }</span>
-                      <span  
-                      style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" , fontSize: "10px"}}
-                      className=" text-muted-foreground">
-                        {
-                          admin.admin.email
-                        || "example.com"
-                        }
-                        </span>
-                    </div>
-                    <ChevronDown className="ml-auto size-4" />
-                  </SidebarMenuButton>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem>
-                    <User className="mr-2 size-4" />
-                    <span>Profile</span>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    className="cursor-pointer"
-                    onClick={toggleTheme}>
-                    {theme === "dark" ? (
-                      <>
-                        <Sun className="mr-2 size-4" />
-                        <span>Light Mode</span>
-                      </>
-                    ) : (
-                      <>
-                        <Moon className="mr-2 size-4" />
-                        <span>Dark Mode</span>
-                      </>
-                    )}
-                  </DropdownMenuItem>
-
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    onClick={handleLogout}
-                    className="cursor-pointer"
-                  >
-                    <LogOut className="mr-2 size-4" />
-                    <span>Log out</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
+                  )}
+                  {!isCollapsed && <ChevronDown className="ml-auto size-4" />}
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem>
+                  <User className="mr-2 size-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={toggleTheme}
+                  className="cursor-pointer"
+                >
+                  {theme === "dark" ? (
+                    <>
+                      <Sun className="mr-2 size-4" />
+                      <span>Light Mode</span>
+                    </>
+                  ) : (
+                    <>
+                      <Moon className="mr-2 size-4" />
+                      <span>Dark Mode</span>
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer"
+                >
+                  <LogOut className="mr-2 size-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
+
       <SidebarRail />
       <ToastContainer />
     </Sidebar>
   );
 }
+
+export default AppSidebar;

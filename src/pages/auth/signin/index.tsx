@@ -45,7 +45,7 @@ function SignIn() {
         dispatch(stopLoading());
         showSuccessToast("Login successful");
         setTimeout(() => {
-        navigate("/dashboard");
+          navigate("/dashboard");
         }, 1000);
       }
     } catch (error) {

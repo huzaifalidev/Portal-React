@@ -24,7 +24,7 @@ const GlobalLoader: React.FC = () => {
         zIndex: 9999,
       }}
     >
-       <Spin size="large" />
+      <Spin size="large" />
     </div>
   );
 };
