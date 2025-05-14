@@ -1,11 +1,10 @@
 "use client";
-
 import type React from "react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import Fuse from "fuse.js";
 import { useDispatch, useSelector } from "react-redux";
-
+import { startLoading, stopLoading } from "@/redux/slices/loading";
 import {
   RefreshCw,
   DollarSign,
@@ -16,16 +15,22 @@ import {
   ChevronDown,
   Check,
   User,
-  BadgeIcon as IdCard,
   CalendarCheck,
   CalendarClock,
   X,
   Calendar,
-  IdCardIcon,
+  CreditCardIcon as IdCardIcon,
+  ImageIcon,
+  ZoomInIcon,
+  BanknoteIcon,
+  UserIcon,
+  ClockIcon,
+  FileTextIcon,
 } from "lucide-react";
 import CustomDrawer from "@/components/drawer";
 import { showErrorToast, showSuccessToast } from "@/components/toasts";
 import type { DrawerProps } from "antd";
+import GlobalModal from "@/components/modal";
 
 import {
   Table,
@@ -54,7 +59,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
+import GlobalCarousel from "@/components/carousel";
 const TaskPage: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [placement] = useState<DrawerProps["placement"]>("right");
@@ -68,12 +73,16 @@ const TaskPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [dateOrder, setDateOrder] = useState("");
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [carouselItems, setCarouselItems] = useState<string[]>([]);
+  const [selectedImage, setSelectedImage] = useState<string>("");
   const showDrawer = (task: any) => {
     setSelectedTask(task);
     setOpen(true);
+    if (task.images && task.images.length > 0) {
+      setCarouselItems(task.images);
+    }
   };
-
   const fuse = new Fuse(tasks, {
     keys: ["clientName", "title"],
     threshold: 0.3,
@@ -96,6 +105,8 @@ const TaskPage: React.FC = () => {
 
   const getApprovalBadge = (status: string) => {
     switch (status.toLowerCase()) {
+      case "modify":
+        return <Badge style={{ backgroundColor: "#f59e0b" }}>Modify</Badge>;
       case "approved":
         return <Badge style={{ backgroundColor: "#22c55e" }}>Approved</Badge>;
       case "pending":
@@ -104,7 +115,7 @@ const TaskPage: React.FC = () => {
         return <Badge style={{ backgroundColor: "#3b82f6" }}>Completed</Badge>;
       case "in-progress":
         return (
-          <Badge style={{ backgroundColor: "#f59e0b" }}>In Progress</Badge>
+          <Badge style={{ backgroundColor: "#9b59b6" }}>In Progress</Badge>
         );
       default:
         return <Badge className="bg-zinc-950">{status}</Badge>;
@@ -119,6 +130,7 @@ const TaskPage: React.FC = () => {
     order = dateOrder
   ) => {
     try {
+      dispatch(startLoading());
       const queryParams = new URLSearchParams();
       if (filter !== "all") {
         queryParams.append("taskApproval", filter);
@@ -135,7 +147,6 @@ const TaskPage: React.FC = () => {
           },
         }
       );
-      console.log(queryParams.toString());
       if (response.status === 200) {
         setTasks(response.data.tasks);
         setTotalPages(
@@ -148,10 +159,12 @@ const TaskPage: React.FC = () => {
     } catch (error) {
       showErrorToast("Error fetching tasks");
     } finally {
+      dispatch(stopLoading());
     }
   };
   const taskUpdateHandler = async (taskId: string, status: string) => {
     try {
+      dispatch(startLoading());
       const response = await axios.put(
         `http://localhost:5001/taskMate/admin/updateTask/${taskId}`,
         {
@@ -177,6 +190,7 @@ const TaskPage: React.FC = () => {
     } catch (error) {
       showErrorToast("Error updating task");
     } finally {
+      dispatch(stopLoading());
     }
   };
   useEffect(() => {
@@ -210,12 +224,14 @@ const TaskPage: React.FC = () => {
   };
 
   const statusFilters = [
+    { label: "Modify", value: "modify" },
     { label: "Approved", value: "approved" },
     { label: "Pending", value: "pending" },
     { label: "Completed", value: "completed" },
     { label: "In Progress", value: "in-progress" },
   ];
   const changeTaskStatus = [
+    { label: "Modify", value: "modify" },
     { label: "Pending", value: "pending" },
     { label: "Approved", value: "approved" },
     { label: "In Progress", value: "in-progress" },
@@ -224,6 +240,13 @@ const TaskPage: React.FC = () => {
   const itemsPerPageOptions = [5, 10, 20, 50];
   const getStatusColor = (status: string) => {
     switch (status) {
+      case "modify":
+        return {
+          bg: "rgba(245, 158, 11, 0.15)", // soft amber background
+          text: "#92400e", // dark amber/burnt orange for strong text contrast
+          border: "#f59e0b", // original amber color as border
+          indicator: "#f59e0b", // same as border for visual consistency
+        };
       case "approved":
         return {
           bg: "rgba(34, 197, 94, 0.15)",
@@ -233,10 +256,10 @@ const TaskPage: React.FC = () => {
         };
       case "in-progress":
         return {
-          bg: "rgba(245, 158, 11, 0.15)",
-          text: "#92400e",
-          border: "#f59e0b",
-          indicator: "#f59e0b",
+          bg: "rgba(155, 89, 182, 0.15)",
+          text: "#6b21a8",
+          border: "#9b59b6",
+          indicator: "#9b59b6",
         };
       case "pending":
         return {
@@ -262,7 +285,6 @@ const TaskPage: React.FC = () => {
     }
   };
 
-  // Helper function to get filter button styling based on active state
   const getFilterButtonStyle = (isActive: boolean, colorKey = "") => {
     if (!isActive) return {};
 
@@ -684,19 +706,22 @@ const TaskPage: React.FC = () => {
         placement={placement}
         open={open}
         onClose={onClose}
-        width={"38.8%"}
+        width="38.5%"
         style={{ zIndex: 1000 }}
         className="overflow-y-auto dark:bg-zinc-900 dark:text-gray-100"
       >
         {selectedTask ? (
-          <div className="space-y-6 px-1">
-            <div>
-              <h2 className="text-2xl font-bold mb-3">{selectedTask.title}</h2>
+          <div className="space-y-6 p-4">
+            {/* Header with task title and status */}
+            <div className="mb-6">
+              <h2 className="text-xl font-semibold mb-4">
+                {selectedTask.title}
+              </h2>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 font-medium transition-all"
                     style={{
                       backgroundColor: getStatusColor(selectedTask.taskApproval)
                         .bg,
@@ -706,7 +731,7 @@ const TaskPage: React.FC = () => {
                     }}
                   >
                     <div
-                      className="w-3 h-3 rounded-full mr-2"
+                      className="w-2.5 h-2.5 rounded-full"
                       style={{
                         backgroundColor: getStatusColor(
                           selectedTask.taskApproval
@@ -714,7 +739,9 @@ const TaskPage: React.FC = () => {
                       }}
                     />
                     <span>
-                      {selectedTask.taskApproval === "pending"
+                      {selectedTask.taskApproval === "modify"
+                        ? "Modify"
+                        : selectedTask.taskApproval === "pending"
                         ? "Pending"
                         : selectedTask.taskApproval === "approved"
                         ? "Approved"
@@ -724,7 +751,7 @@ const TaskPage: React.FC = () => {
                         ? "Completed"
                         : selectedTask.taskApproval}
                     </span>
-                    <ChevronDown className="h-4 w-4 ml-1" />
+                    <ChevronDown className="h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
@@ -738,20 +765,20 @@ const TaskPage: React.FC = () => {
                   {changeTaskStatus.map((filter) => (
                     <DropdownMenuItem
                       key={filter.value}
-                      className="cursor-pointer"
+                      className="cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-zinc-800"
                       onClick={() =>
                         taskUpdateHandler(selectedTask._id, filter.value)
                       }
                     >
                       <div className="flex items-center w-full">
                         <div
-                          className="w-3 h-3 rounded-full mr-2"
+                          className="w-2.5 h-2.5 rounded-full mr-2"
                           style={{
                             backgroundColor: getStatusColor(filter.value)
                               .indicator,
                           }}
                         />
-                        <span>{filter.label}</span>
+                        <span className="text-sm">{filter.label}</span>
                         {selectedTask.taskApproval === filter.value && (
                           <Check className="h-4 w-4 ml-auto" />
                         )}
@@ -761,101 +788,195 @@ const TaskPage: React.FC = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="bg-white dark:bg-zinc-700 rounded-lg p-4 shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Description
-              </h3>
-              <p className="text-gray-800 dark:text-gray-100">
+
+            {/* Description */}
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <div className="flex items-center mb-3">
+                <FileTextIcon className="h-5 w-5 text-blue-500 mr-2" />
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wide">
+                  Description
+                </h3>
+              </div>
+              <p className="text-gray-800 dark:text-gray-200 text-sm leading-relaxed">
                 {selectedTask.description}
               </p>
             </div>
-            <div className="bg-white dark:bg-zinc-700 rounded-lg p-4 shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">
-                Timeline
-              </h3>
-              <div className="flex flex-col md:flex-row gap-4">
-                <div className="flex-1">
-                  <div className="flex items-center">
-                    <CalendarClock className="h-5 w-5 text-red-500 mr-2" />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
+
+            {/* Timeline */}
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <div className="flex items-center mb-4">
+                <ClockIcon className="h-5 w-5 text-blue-500 mr-2" />
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wide">
+                  Timeline
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center">
+                  <div className="bg-red-100 dark:bg-red-900/30 rounded-full p-2 mr-3">
+                    <CalendarClock className="h-5 w-5 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 block">
                       Deadline
                     </span>
-                  </div>
-                  <p className="mt-1 font-semibold">
-                    {formatDate(selectedTask.deadline)}
-                  </p>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center">
-                    <CalendarCheck className="h-5 w-5 text-green-500 mr-2" />
-                    <span className="text-sm text-gray-500 dark:text-gray-400">
-                      Submitted
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      {formatDate(selectedTask.deadline)}
                     </span>
                   </div>
-                  <p className="mt-1 font-semibold">
-                    {formatDate(selectedTask.timeSubmitted)}
-                  </p>
                 </div>
-              </div>
-            </div>
-            <div className="bg-white dark:bg-zinc-700 rounded-lg p-4 shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">
-                Client Information
-              </h3>
-              <div className="grid grid-cols-1 gap-2">
+
                 <div className="flex items-center">
-                  <User className="h-4 w-4 text-blue-500 mr-2" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400 w-24">
-                    Name:
-                  </span>
-                  <span className="font-medium">{selectedTask.clientName}</span>
-                </div>
-                <div className="flex items-center">
-                  <IdCardIcon className="h-4 w-4 text-blue-500 mr-2" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400 w-24">
-                    CNIC:
-                  </span>
-                  <span className="font-medium">{selectedTask.cnicNumber}</span>
+                  <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-2 mr-3">
+                    <CalendarCheck className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                      Submitted
+                    </span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      {formatDate(selectedTask.timeSubmitted)}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white dark:bg-zinc-700 rounded-lg p-4 shadow-sm">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-2">
-                Financial Details
-              </h3>
-              <div className="flex items-center">
-                <DollarSign className="h-6 w-6 text-green-600 mr-2" />
-                <span className="text-2xl font-bold">${selectedTask.fare}</span>
+            {/* Client Information */}
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <div className="flex items-center mb-4">
+                <UserIcon className="h-5 w-5 text-blue-500 mr-2" />
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wide">
+                  Client Information
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-3">
+                    <User className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                      Name
+                    </span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      {selectedTask.clientName}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-3">
+                    <IdCardIcon className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                      CNIC
+                    </span>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      {selectedTask.cnicNumber}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-zinc-700">
+              <div className="flex items-center mb-3">
+                <BanknoteIcon className="h-5 w-5 text-blue-500 mr-2" />
+                <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wide">
+                  Financial Details
+                </h3>
+              </div>
+              <div className="flex items-center mt-2">
+                <div className="bg-green-100 dark:bg-green-900/30 rounded-full p-3 mr-3">
+                  <DollarSign className="h-6 w-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 block">
+                    Total Fare
+                  </span>
+                  <span className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                    ${selectedTask.fare}
+                  </span>
+                </div>
               </div>
             </div>
 
             {selectedTask.images && selectedTask.images.length > 0 && (
-              <div className="bg-white dark:bg-zinc-700 rounded-lg p-4 shadow-sm">
-                <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider mb-3">
-                  Attached Images
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                  {selectedTask.images.map((image, index) => (
-                    <div
+              <div className="bg-white dark:bg-zinc-800 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-zinc-700">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center">
+                    <ImageIcon className="h-5 w-5 text-blue-500 mr-2" />
+                    <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-200 uppercase tracking-wide">
+                      Attached Images
+                    </h3>
+                  </div>
+                  <Badge
+                    variant="outline"
+                    className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                  >
+                    {selectedTask.images.length} Images
+                  </Badge>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  {selectedTask.images.map((img: string, index: number) => (
+                    <button
                       key={index}
-                      className="relative group overflow-hidden rounded-md border border-gray-200 dark:border-gray-600"
+                      onClick={() => {
+                        setSelectedImage(`http://localhost:5001/${img}`);
+                        setIsModalOpen(true);
+                      }}
+                      className="focus:outline-none group relative"
                     >
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all duration-200 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <ZoomInIcon className="h-8 w-8 text-white" />
+                      </div>
                       <img
-                        src={image || "/placeholder.svg"}
-                        alt={`Task Image ${index + 1}`}
-                        className="w-full h-32 object-cover group-hover:scale-105 transition-transform duration-200"
+                        src={`http://localhost:5001/${img}`}
+                        alt={`Image ${index + 1}`}
+                        className="w-full h-36 object-cover rounded-lg shadow-sm transition-all duration-200 group-hover:shadow-md"
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-200"></div>
-                    </div>
+                    </button>
                   ))}
                 </div>
               </div>
             )}
+            <GlobalModal
+              open={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              title="Image Preview"
+              width={1000}
+              height="600px"
+              bodyStyle={{ backgroundColor: "black" }}
+            >
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full"
+                  onClick={() => setIsModalOpen(false)}
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+                <GlobalCarousel
+                  height="500px"
+                  width="100%"
+                  items={selectedTask.images.map((img: string) => (
+                    <img
+                      key={img}
+                      src={`http://localhost:5001/${img}`}
+                      alt="Preview"
+                      className="w-full h-full object-contain"
+                    />
+                  ))}
+                />
+              </div>
+            </GlobalModal>
           </div>
         ) : (
           loading && (
-            <div className="flex flex-col items-center justify-center h-64 space-y-4">
+            <div className="flex flex-col items-center justify-center h-96 space-y-4">
               <div className="w-16 h-16 border-4 border-t-blue-500 border-b-blue-500 border-r-transparent border-l-transparent rounded-full animate-spin"></div>
               <p className="text-gray-500 dark:text-gray-400">
                 Loading task details...

@@ -11,7 +11,7 @@ import Layout from "./layout/index.tsx";
 import GlobalLoader from "./components/loading";
 import Tasks from "./pages/tasks";
 import Portfolios from "./pages/portfolios";
-// import "antd/dist/reset.css";
+import ProtectedRoute from "./middleware/ProtectedRoute";
 
 function App() {
   return (
@@ -24,28 +24,36 @@ function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/forgot-password" element={<ForgetPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
+
+          {/* ✅ Protected Routes */}
           <Route
             path="/dashboard"
             element={
-              <Layout>
-                <Dashboard />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/tasks"
             element={
-              <Layout>
-                <Tasks />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <Tasks />
+                </Layout>
+              </ProtectedRoute>
             }
           />
           <Route
             path="/portfolios"
             element={
-              <Layout>
-                <Portfolios />
-              </Layout>
+              <ProtectedRoute>
+                <Layout>
+                  <Portfolios />
+                </Layout>
+              </ProtectedRoute>
             }
           />
         </Routes>

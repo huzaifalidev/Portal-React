@@ -7,6 +7,7 @@ import {
   Moon,
   Sun,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,6 +39,7 @@ import { setAdmin } from "@/redux/slices/admin";
 import { useEffect } from "react";
 import type { RootState } from "@/redux/store";
 import { toggleSidebar, collapseSidebar } from "@/redux/slices/sidebar";
+import { setColorTheme } from "@/redux/slices/theme";
 
 const navItems = [
   { title: "Dashboard", icon: FileBarChart, url: "/dashboard" },
@@ -67,7 +69,6 @@ export function AppSidebar() {
       },
     });
   };
-
   const profileHandler = async () => {
     try {
       const res = await axios.get(
@@ -94,7 +95,9 @@ export function AppSidebar() {
   }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    dispatch(setColorTheme(newTheme));
   };
 
   return (
@@ -166,7 +169,7 @@ export function AppSidebar() {
                 >
                   <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
                     <img
-                      src="https://i.pravatar.cc/40"
+                      src="https://github.com/shadcn.png"
                       alt="User Avatar"
                       className="h-full w-full object-cover"
                     />
@@ -181,7 +184,7 @@ export function AppSidebar() {
                       </span>
                     </div>
                   )}
-                  {!isCollapsed && <ChevronDown className="ml-auto size-4" />}
+                  {!isCollapsed && <ChevronUp className="ml-auto size-4" />}
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56">
