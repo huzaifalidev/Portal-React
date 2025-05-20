@@ -133,7 +133,7 @@ const TaskPage: React.FC = () => {
       dispatch(startLoading());
       const queryParams = new URLSearchParams();
       if (filter !== "all") {
-        queryParams.append("taskApproval", filter);
+        queryParams.append("taskStatus", filter);
       }
       queryParams.append("page", page.toString());
       queryParams.append("limit", limit.toString());
@@ -168,7 +168,7 @@ const TaskPage: React.FC = () => {
       const response = await axios.put(
         `http://localhost:5001/taskMate/admin/updateTask/${taskId}`,
         {
-          taskApproval: status,
+          taskStatus: status,
         },
         {
           headers: {
@@ -221,7 +221,7 @@ const TaskPage: React.FC = () => {
 
   const cn = (...classes: string[]) => {
     return classes.filter(Boolean).join(" ");
-  };
+  }
 
   const statusFilters = [
     { label: "Modify", value: "modify" },
@@ -606,7 +606,7 @@ const TaskPage: React.FC = () => {
                           ${task.fare}
                         </TableCell>
                         <TableCell>
-                          {getApprovalBadge(task.taskApproval)}
+                          {getApprovalBadge(task.taskStatus)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -723,10 +723,10 @@ const TaskPage: React.FC = () => {
                     variant="outline"
                     className="flex items-center gap-2 font-medium transition-all"
                     style={{
-                      backgroundColor: getStatusColor(selectedTask.taskApproval)
+                      backgroundColor: getStatusColor(selectedTask.taskStatus)
                         .bg,
-                      color: getStatusColor(selectedTask.taskApproval).text,
-                      borderColor: getStatusColor(selectedTask.taskApproval)
+                      color: getStatusColor(selectedTask.taskStatus).text,
+                      borderColor: getStatusColor(selectedTask.taskStatus)
                         .border,
                     }}
                   >
@@ -734,22 +734,22 @@ const TaskPage: React.FC = () => {
                       className="w-2.5 h-2.5 rounded-full"
                       style={{
                         backgroundColor: getStatusColor(
-                          selectedTask.taskApproval
+                          selectedTask.taskStatus
                         ).indicator,
                       }}
                     />
                     <span>
-                      {selectedTask.taskApproval === "modify"
+                      {selectedTask.taskStatus === "modify"
                         ? "Modify"
-                        : selectedTask.taskApproval === "pending"
+                        : selectedTask.taskStatus === "pending"
                         ? "Pending"
-                        : selectedTask.taskApproval === "approved"
+                        : selectedTask.taskStatus === "approved"
                         ? "Approved"
-                        : selectedTask.taskApproval === "in-progress"
+                        : selectedTask.taskStatus === "in-progress"
                         ? "In Progress"
-                        : selectedTask.taskApproval === "completed"
+                        : selectedTask.taskStatus === "completed"
                         ? "Completed"
-                        : selectedTask.taskApproval}
+                        : selectedTask.taskStatus}
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
@@ -779,7 +779,7 @@ const TaskPage: React.FC = () => {
                           }}
                         />
                         <span className="text-sm">{filter.label}</span>
-                        {selectedTask.taskApproval === filter.value && (
+                        {selectedTask.taskStatus === filter.value && (
                           <Check className="h-4 w-4 ml-auto" />
                         )}
                       </div>

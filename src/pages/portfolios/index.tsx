@@ -129,7 +129,7 @@ const PortfolioPage: React.FC = () => {
       dispatch(startLoading());
       const queryParams = new URLSearchParams();
       if (filter !== "all") {
-        queryParams.append("portfolioApproval", filter);
+        queryParams.append("portfolioStatus", filter);
       }
       queryParams.append("page", page.toString());
       queryParams.append("limit", limit.toString());
@@ -186,7 +186,7 @@ const PortfolioPage: React.FC = () => {
       const response = await axios.put(
         `http://localhost:5001/taskMate/admin/updatePortfolio/${id}`,
         {
-          portfolioApproval: status,
+          portfolioStatus: status,
         },
         {
           headers: {
@@ -616,7 +616,7 @@ const PortfolioPage: React.FC = () => {
                           {portfolio.averageRating || 0}
                         </TableCell>
                         <TableCell>
-                          {getApprovalBadge(portfolio.portfolioApproval)}
+                          {getApprovalBadge(portfolio.portfolioStatus)}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -732,12 +732,12 @@ const PortfolioPage: React.FC = () => {
                     className="flex items-center gap-2 font-medium transition-all"
                     style={{
                       backgroundColor: getStatusColor(
-                        selectedPortfolio.portfolioApproval
+                        selectedPortfolio.portfolioStatus
                       ).bg,
-                      color: getStatusColor(selectedPortfolio.portfolioApproval)
+                      color: getStatusColor(selectedPortfolio.portfolioStatus)
                         .text,
                       borderColor: getStatusColor(
-                        selectedPortfolio.portfolioApproval
+                        selectedPortfolio.portfolioStatus
                       ).border,
                     }}
                   >
@@ -745,20 +745,20 @@ const PortfolioPage: React.FC = () => {
                       className="w-2.5 h-2.5 rounded-full"
                       style={{
                         backgroundColor: getStatusColor(
-                          selectedPortfolio.portfolioApproval
+                          selectedPortfolio.portfolioStatus
                         ).indicator,
                       }}
                     />
                     <span>
-                      {selectedPortfolio.portfolioApproval === "modify"
+                      {selectedPortfolio.portfolioStatus === "modify"
                         ? "Modify"
-                        : selectedPortfolio.portfolioApproval === "pending"
+                        : selectedPortfolio.portfolioStatus === "pending"
                         ? "Pending"
-                        : selectedPortfolio.portfolioApproval === "approved"
+                        : selectedPortfolio.portfolioStatus === "approved"
                         ? "Approved"
-                        : selectedPortfolio.portfolioApproval === "completed"
+                        : selectedPortfolio.portfolioStatus === "completed"
                         ? "Completed"
-                        : selectedPortfolio.portfolioApproval}
+                        : selectedPortfolio.portfolioStatus}
                     </span>
                     <ChevronDown className="h-4 w-4" />
                   </Button>
@@ -788,7 +788,7 @@ const PortfolioPage: React.FC = () => {
                           }}
                         />
                         <span className="text-sm">{filter.label}</span>
-                        {selectedPortfolio.portfolioApproval ===
+                        {selectedPortfolio.portfolioStatus ===
                           filter.value && <Check className="h-4 w-4 ml-auto" />}
                       </div>
                     </DropdownMenuItem>
