@@ -1,5 +1,5 @@
 import { Switch } from "@/components/ui/switch";
-import { useTheme } from "@/components/theme-provider";
+import { useTheme } from "@/components/ui/theme-provider";
 function LandingPage() {
   const { theme, setTheme } = useTheme();
 

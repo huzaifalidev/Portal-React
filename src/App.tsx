@@ -4,7 +4,7 @@ import SignUp from "./pages/auth/signup";
 import ForgetPassword from "./pages/auth/forgetpassword";
 import ResetPassword from "./pages/auth/resetpassword";
 import LandingPage from "./pages/landingPage";
-import { ThemeProvider } from "./components/theme-provider.tsx";
+import { ThemeProvider } from "./components/ui/theme-provider.tsx";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/dashboard/index.tsx";
 import Layout from "./layout/index.tsx";

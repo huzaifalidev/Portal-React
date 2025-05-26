@@ -48,8 +48,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/tasks/card";
-import { Badge } from "@/components/ui/tasks/badge";
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -154,7 +154,7 @@ const TaskPage: React.FC = () => {
             Math.ceil(response.data.totalCount / limit) ||
             1
         );
-        showSuccessToast("Tasks fetched");
+       
       }
     } catch (error) {
       showErrorToast("Error fetching tasks");

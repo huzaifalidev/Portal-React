@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Switch } from "@/components/ui/switch";
-import { useTheme } from "../theme-provider";
+import { useTheme } from "../ui/theme-provider";
 import { useDispatch } from "react-redux";
 import { setColorTheme } from "@/redux/slices/theme";
 function Navbar() {

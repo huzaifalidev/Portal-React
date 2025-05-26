@@ -49,8 +49,8 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/tasks/card";
-import { Badge } from "@/components/ui/tasks/badge";
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   DropdownMenu,
@@ -151,7 +151,7 @@ const PortfolioPage: React.FC = () => {
             Math.ceil(response.data.totalCount / limit) ||
             1
         );
-        showSuccessToast("Portfolio fetched");
+       
       }
     } catch (error) {
       showErrorToast("Error fetching tasks");
@@ -788,8 +788,8 @@ const PortfolioPage: React.FC = () => {
                           }}
                         />
                         <span className="text-sm">{filter.label}</span>
-                        {selectedPortfolio.portfolioStatus ===
-                          filter.value && <Check className="h-4 w-4 ml-auto" />}
+                        {selectedPortfolio.portfolioStatus === filter.value && (
+                          <Check className="h-4 w-4 ml-auto" />)}
                       </div>
                     </DropdownMenuItem>
                   ))}

@@ -6,7 +6,6 @@ import {
   User,
   Moon,
   Sun,
-  ChevronDown,
   ChevronUp,
 } from "lucide-react";
 import {
@@ -28,8 +27,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import md5 from "md5"
 import { Link, useNavigate } from "react-router-dom";
-import { useTheme } from "../theme-provider";
+import { useTheme } from "../ui/theme-provider";
 import { useAlertDialog } from "../alertdialog";
 import { showSuccessToast } from "../toasts";
 import { ToastContainer } from "react-toastify";
@@ -47,6 +47,7 @@ const navItems = [
   { title: "Portfolios", icon: Briefcase, url: "/portfolios" },
   { title: "Report", icon: FileBarChart, url: "/reports" },
 ];
+
 
 export function AppSidebar() {
   const dispatch = useDispatch();
@@ -100,6 +101,9 @@ export function AppSidebar() {
     dispatch(setColorTheme(newTheme));
   };
 
+const email = admin.admin.email || "";
+const hash = md5(email)
+const avatarUrl = `https://www.gravatar.com/avatar/${hash}?d=identicon`
   return (
     <Sidebar className="border-r-0">
       <SidebarHeader className={isCollapsed ? "p-2" : "p-3"}>
@@ -109,7 +113,6 @@ export function AppSidebar() {
               size="lg"
               className={isCollapsed ? "justify-center" : "gap-3"}
               tooltip={isCollapsed ? "Toggle Sidebar" : undefined}
-              onClick={() => dispatch(toggleSidebar())}
               isActive
             >
               <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-blue-600 text-white">
@@ -168,8 +171,9 @@ export function AppSidebar() {
                   className={isCollapsed ? "justify-center" : "gap-3"}
                 >
                   <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
+                    
                     <img
-                      src="https://github.com/shadcn.png"
+                      src={avatarUrl} 
                       alt="User Avatar"
                       className="h-full w-full object-cover"
                     />
