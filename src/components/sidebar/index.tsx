@@ -7,6 +7,7 @@ import {
   Moon,
   Sun,
   ChevronUp,
+  TrendingUp,
 } from "lucide-react";
 import {
   Sidebar,
@@ -41,7 +42,7 @@ import type { RootState } from "@/redux/store";
 import { setColorTheme } from "@/redux/slices/theme";
 
 const navItems = [
-  { title: "Dashboard", icon: FileBarChart, url: "/dashboard" },
+  { title: "Dashboard", icon: TrendingUp, url: "/dashboard" },
   { title: "Tasks", icon: CheckSquare, url: "/tasks" },
   { title: "Portfolios", icon: Briefcase, url: "/portfolios" },
   { title: "Report", icon: FileBarChart, url: "/reports" },
@@ -168,11 +169,11 @@ export function AppSidebar() {
                   className={isCollapsed ? "justify-center" : "gap-3"}
                 >
                   <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
-                      <img
-                        src={`https://www.github.com/huzaifalidev.png`}
-                        alt="User Avatar"
-                        className="h-full w-full object-cover"
-                      />
+                    <img
+                      src={`https://www.github.com/huzaifalidev.png`}
+                      alt="User Avatar"
+                      className="h-full w-full object-cover"
+                    />
                   </div>
                   {!isCollapsed && (
                     <div className="flex flex-col text-left overflow-hidden">

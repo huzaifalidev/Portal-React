@@ -60,7 +60,7 @@ function SignIn() {
       className={` dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100 w-full h-screen flex justify-center items-center`}
     >
       <div
-        className={` flex flex-col w-[50%] h-full  dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100rounded-md p-10 gap-4 items-center justify-center`}
+        className={` flex flex-col w-[50%] h-full  dark:bg-zinc-800 bg-[#EEEEEE] text-zinc-800 dark:text-zinc-100rounded-md p-10 gap-4 items-center justify-center`}
       >
         <div className="border-zinc-400 rounded-2xl p-10 flex flex-col gap-4 items-start w-full max-w-md  dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100">
           <h2 className={`font-semibold text-4xl `}>Login</h2>
@@ -78,11 +78,10 @@ function SignIn() {
                   type="email"
                   name="email"
                   placeholder="Email"
-                  className={`outline-none border-2 rounded-md p-2 w-full ${
-                    errors.email && touched.email
-                      ? "border-red-500"
-                      : "border-zinc-400"
-                  }`}
+                  className={`outline-none border-2 rounded-md p-2 w-full ${errors.email && touched.email
+                    ? "border-red-500"
+                    : "border-zinc-400"
+                    }`}
                 />
                 <ErrorMessage
                   name="email"
@@ -96,11 +95,10 @@ function SignIn() {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
-                    className={`outline-none border-2 rounded-md p-2 w-full ${
-                      errors.password && touched.password
-                        ? "border-red-500"
-                        : "border-zinc-400"
-                    }`}
+                    className={`outline-none border-2 rounded-md p-2 w-full ${errors.password && touched.password
+                      ? "border-red-500"
+                      : "border-zinc-400"
+                      }`}
                   />
                   <div
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-zinc-500"
@@ -149,14 +147,13 @@ function SignIn() {
         </div>
       </div>
 
-      <div className={`w-[50%] h-screen flex justify-center items-center  `}>
+      <div className={`w-[50%] h-screen flex justify-center items-center flex-col gap-4`}>
         <div className=" rounded-md flex items-center justify-center">
           <img
-            src="src\assets\taskMate_logo.svg"
+            src="src/assets/taskMate_3.jpeg"
             alt="taskMate"
             title="taskMate"
           />
-          hello
         </div>
       </div>
 

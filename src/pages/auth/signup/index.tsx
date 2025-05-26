@@ -65,20 +65,19 @@ function SignUp() {
 
   return (
     <div
-      className={` dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100 w-full h-screen flex justify-center items-center`}
+      className={` dark:bg-zinc-800  text-zinc-800 dark:text-zinc-100 w-full h-screen flex justify-center items-center`}
     >
       <div className={`w-[50%] h-screen flex justify-center items-center  `}>
-        <div className=" rounded-md flex items-center justify-center">
+        <div className="w-full rounded-md flex items-center justify-center">
           <img
-            src="src\assets\taskMate_logo.svg"
+            src="src/assets/taskMate_1.jpeg"
             alt="taskMate"
             title="taskMate"
           />
-          hello
         </div>
       </div>
       <div
-        className={` flex flex-col w-[50%] h-full  dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100rounded-md p-10 gap-4 items-center justify-center`}
+        className={` flex flex-col w-[50%] h-full  dark:bg-zinc-800  bg-[#EEE6D9] text-zinc-800 dark:text-zinc-100 rounded-md p-10 gap-4 items-center justify-center`}
       >
         <div className="border-zinc-400 rounded-2xl p-10 flex flex-col gap-4 items-start w-full max-w-md  dark:bg-zinc-800 bg-white text-zinc-800 dark:text-zinc-100">
           <h2 className={`font-semibold text-4xl `}>Sign Up</h2>
@@ -96,11 +95,10 @@ function SignUp() {
                   type="text"
                   name="name"
                   placeholder="Name"
-                  className={`outline-none border-2 rounded-md p-2 w-full ${
-                    errors.name && touched.name
-                      ? "border-red-500"
-                      : "border-zinc-400"
-                  }`}
+                  className={`outline-none border-2 rounded-md p-2 w-full ${errors.name && touched.name
+                    ? "border-red-500"
+                    : "border-zinc-400"
+                    }`}
                 />
                 <ErrorMessage
                   name="name"
@@ -112,11 +110,10 @@ function SignUp() {
                   type="email"
                   name="email"
                   placeholder="Email"
-                  className={`outline-none border-2 rounded-md p-2 w-full ${
-                    errors.email && touched.email
-                      ? "border-red-500"
-                      : "border-zinc-400"
-                  }`}
+                  className={`outline-none border-2 rounded-md p-2 w-full ${errors.email && touched.email
+                    ? "border-red-500"
+                    : "border-zinc-400"
+                    }`}
                 />
                 <ErrorMessage
                   name="email"
@@ -130,11 +127,10 @@ function SignUp() {
                     type={showPassword ? "text" : "password"}
                     name="password"
                     placeholder="Password"
-                    className={`outline-none border-2 rounded-md p-2 w-full ${
-                      errors.password && touched.password
-                        ? "border-red-500"
-                        : "border-zinc-400"
-                    }`}
+                    className={`outline-none border-2 rounded-md p-2 w-full ${errors.password && touched.password
+                      ? "border-red-500"
+                      : "border-zinc-400"
+                      }`}
                   />
                   <div
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-zinc-500"
