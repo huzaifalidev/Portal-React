@@ -38,7 +38,7 @@ import axios from "axios";
 import { setAdmin } from "@/redux/slices/admin";
 import { useEffect } from "react";
 import type { RootState } from "@/redux/store";
-import { toggleSidebar, collapseSidebar } from "@/redux/slices/sidebar";
+// import { toggleSidebar, collapseSidebar } from "@/redux/slices/sidebar";
 import { setColorTheme } from "@/redux/slices/theme";
 
 const navItems = [
@@ -171,12 +171,11 @@ const avatarUrl = `https://www.gravatar.com/avatar/${hash}?d=identicon`
                   className={isCollapsed ? "justify-center" : "gap-3"}
                 >
                   <div className="flex aspect-square size-8 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-purple-500 to-indigo-600">
-                    
-                    <img
-                      src={avatarUrl} 
-                      alt="User Avatar"
-                      className="h-full w-full object-cover"
-                    />
+                      <img
+                        src={`https://www.github.com/huzaifalidev.png`}
+                        alt="User Avatar"
+                        className="h-full w-full object-cover"
+                      />
                   </div>
                   {!isCollapsed && (
                     <div className="flex flex-col text-left overflow-hidden">
