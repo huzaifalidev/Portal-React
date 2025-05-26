@@ -27,7 +27,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import md5 from "md5"
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../ui/theme-provider";
 import { useAlertDialog } from "../alertdialog";
@@ -101,9 +100,7 @@ export function AppSidebar() {
     dispatch(setColorTheme(newTheme));
   };
 
-const email = admin.admin.email || "";
-const hash = md5(email)
-const avatarUrl = `https://www.gravatar.com/avatar/${hash}?d=identicon`
+
   return (
     <Sidebar className="border-r-0">
       <SidebarHeader className={isCollapsed ? "p-2" : "p-3"}>

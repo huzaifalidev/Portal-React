@@ -142,7 +142,7 @@ const kpiData = {
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen dark:*:bg-gray-900  flex flex-col dark: text-zinc-50">
+    <div className="min-h-screen dark:*:bg-zinc-950 flex flex-col dark: text-zinc-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between">
