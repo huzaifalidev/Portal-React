@@ -126,7 +126,7 @@ function SignIn() {
 
                 <button
                   type="submit"
-                  className={`  dark:bg-white bg-zinc-800 text-white dark:text-zinc-800 font-semibold w-full rounded-md p-3 `}
+                  className={`  dark:bg-white bg-zinc-800 hover:bg-zinc-600 text-white dark:hover:bg-zinc-200 dark:text-zinc-800 font-semibold w-full rounded-md p-3 `}
                 >
                   Sign In
                 </button>
