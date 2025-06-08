@@ -91,7 +91,7 @@ const TaskPage: React.FC = () => {
   const formatDate = (dateString: string) => {
     const dateObj = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
+      year: "2-digit",
       month: "long",
       day: "numeric",
     };
@@ -475,7 +475,7 @@ const TaskPage: React.FC = () => {
                       ? "Newest"
                       : dateOrder === "oldest"
                       ? "Oldest"
-                      : "Date"}
+                      : "Deadline"}
                   </span>
                   <ChevronDown className="h-4 w-4 ml-1" />
                 </Button>
@@ -577,6 +577,9 @@ const TaskPage: React.FC = () => {
                       <TableHead className="font-semibold">Client</TableHead>
                       <TableHead className="font-semibold">Title</TableHead>
                       <TableHead className="hidden md:table-cell font-semibold">
+                        Created At
+                      </TableHead>
+                      <TableHead className="hidden md:table-cell font-semibold">
                         Deadline
                       </TableHead>
                       <TableHead className="hidden md:table-cell font-semibold">
@@ -599,6 +602,9 @@ const TaskPage: React.FC = () => {
                       >
                         <TableCell>{task.clientName}</TableCell>
                         <TableCell>{task.title}</TableCell>
+                        <TableCell className="hidden md:table-cell">
+                          {formatDate(task.timeSubmitted)}
+                        </TableCell>
                         <TableCell className="hidden md:table-cell">
                           {formatDate(task.deadline)}
                         </TableCell>
