@@ -69,7 +69,7 @@ const PortfolioPage: React.FC = () => {
   const loading = useSelector((state: any) => state.loading.isLoading);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [itemsPerPage, setItemsPerPage] = useState(5);
   const [statusFilter, setStatusFilter] = useState("");
   const [sortOrder, setSortOrder] = useState("");
   const [dateOrder, setDateOrder] = useState("");
