@@ -113,8 +113,8 @@ export function AppSidebar() {
               tooltip={isCollapsed ? "Toggle Sidebar" : undefined}
               isActive
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-blue-600 text-white">
-                <FileBarChart className="size-4" />
+              <div className="flex aspect-square size-8 items-center justify-center rounded-md bg-[#0052cc] text-white">
+                <img src="src/assets/fav_icon.png" alt="Logo" className="w-6 h-6" />
               </div>
               {!isCollapsed && (
                 <div className="flex flex-col text-left">
