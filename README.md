@@ -70,7 +70,7 @@ taskmate-frontend/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/taskmate-frontend.git
+git clone https://github.com/huzaifalidev/Portal-React
 cd taskmate-frontend
 npm install
 npm run dev
